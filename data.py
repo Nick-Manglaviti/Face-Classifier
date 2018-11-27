@@ -2,7 +2,7 @@
 # a main directory and create arrays that contain the image
 # and corresponding label. These will then be split into folds
 # to allow for Cross-Validation.
-import os
+
 import person
 import fold
 

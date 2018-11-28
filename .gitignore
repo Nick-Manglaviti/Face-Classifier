@@ -1,3 +1,5 @@
 .idea
 /People/Nick/*
 __pycache__
+People/Random/*
+!People/Random/Placeholder.JPG

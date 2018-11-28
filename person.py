@@ -2,8 +2,13 @@
 # Has a name which is also used as a label.
 # An array of images.
 
+
 class Person:
 
-    def __init__(self, name):
+    def __init__(self, name, pictures):
         self.name = name
-        self.pictures = []
+        self.pictures = pictures
+
+    def person_to_string(self):
+        print(self.name)
+        print(self.pictures)

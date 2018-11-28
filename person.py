@@ -11,4 +11,5 @@ class Person:
 
     def person_to_string(self):
         print(self.name)
-        print(self.pictures)
+        print(len(self.pictures))
+

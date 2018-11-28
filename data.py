@@ -18,8 +18,7 @@ class Data:
     # Constructor for Data
     def __init__(self, path, train, test):
         self.people = []
-        self.people_count = 0
-        self.others = []
+        self.randoms = []
         if os.path.isdir(path):
             self.path = path
         else:
@@ -45,20 +44,25 @@ class Data:
             if os.path.isdir(person_path):
                 images = []
                 label = os.path.basename(person_path)
-                for img in os.listdir(person_path):
-                    if img.endswith('.jpg') or img.endswith('.JPG'):
-                        print(img)
-                        image = cv2.imread(os.path.join(person_path, img))
-                        images.append(img)
+                for image in os.listdir(person_path):
+                    if image.endswith('.jpg') or image.endswith('.JPG'):
+                        image = cv2.imread(os.path.join(person_path, image))
+                        images.append(image)
                 if images.__len__() < 6:
                     print("Not enough images. Must be more than 5")
                 else:
                     images = numpy.array(images)
                     person = p.Person(label, images)
-                    person.person_to_string()
+                    if person.name == "Random":
+                        self.randoms.append(person)
+                    else:
+                        self.people.append(person)
+                        person.person_to_string()
+        print("This many people in Dataset: {0}".format(len(self.people)))
 
 
     # Method: Format image.
+    
 
     # Method: Split data based on the parameter in the constructor into folds.
 

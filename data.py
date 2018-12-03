@@ -5,9 +5,8 @@
 
 import os
 import cv2
-import numpy
-import person as p
-import fold
+from person import Person
+from fold import Fold
 
 # The Default values for the data constructor if none is selected.
 PEOPLE_PATH = './People'
@@ -15,29 +14,33 @@ PEOPLE_PATH = './People'
 
 class Data:
 
-    # Constructor for Data
-    def __init__(self, path, train, test):
+    def __init__(self, path='', num_folds=5):
+        """
+        Constructor to initialize the dataset.
+        :param path:
+        :param num_folds:
+        """
         self.people = []
-        self.randoms = []
-        if os.path.isdir(path):
-            self.path = path
-        else:
+        self.random = Person()
+        self.path = path
+        fold = Fold()
+        self.folds = [fold] * num_folds
+
+        if not os.path.isdir(self.path):
             print("This path is not a valid directory")
             raise ValueError
-        self.path = path
-        if (train + test) == 1.0:
-            self.train = train
-            self.test = test
-        else:
-            print("Values for train and test don't add to 1.0, using default values...")
-            self.train = .6
-            self.test = .4
-        print("Train: {0} Test: {1}".format(self.train, self.test))
+        if len(self.folds) < 3:
+            print("Cannot use less than three folds for cross validation")
+
         self.read_path()
+        self.format_images()
+        self.split_into_folds()
 
-
-    # Method: Gather all images with the respective label for all people.
     def read_path(self):
+        """
+        Gather all images with the respective label for all people
+        with the given path.
+        """
         for directory in os.listdir(self.path):
             print("\nLooking through " + directory)
             person_path = os.path.join(self.path, directory)
@@ -48,25 +51,41 @@ class Data:
                     if image.endswith('.jpg') or image.endswith('.JPG'):
                         image = cv2.imread(os.path.join(person_path, image))
                         images.append(image)
-                if images.__len__() < 6:
-                    print("Not enough images. Must be more than 5")
+                if len(images) < len(self.folds):
+                    print(f'Not enough images. Must be more than the amount of folds, {len(self.folds)}')
                 else:
-                    images = numpy.array(images)
-                    person = p.Person(label, images)
+                    person = Person(label, images)
                     if person.name == "Random":
-                        self.randoms.append(person)
+                        self.random = person
                     else:
                         self.people.append(person)
-                        person.person_to_string()
+        if self.random.name is not 'Random' or len(self.random.pictures) < len(self.folds):
+            print(f'No random people images were found for the dataset. A directory named Random needs to exist '
+                  f'with more pictures than there are folds to compare and test against the others.')
+            raise ValueError
         print("This many people in Dataset: {0}".format(len(self.people)))
 
+    def format_images(self):
+        """
+        This method will rip out the face from the image.
+        It will also format it to be computed by a computational graph.
+        """
+        #face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        #for person in self.people:
+        #    for picture in person.pictures:
+        #        cv2.imshow('img', picture)
+        #        cv2.waitKey(1000)
+        #        cv2.destroyAllWindows()
 
-    # Method: Format image.
-    
+    def split_into_folds(self):
+        """
+        Create the folds by splitting each person's
+        images into each one
+        """
 
-    # Method: Split data based on the parameter in the constructor into folds.
+
 
 
 if __name__ == '__main__':
 
-    data1 = Data(PEOPLE_PATH, .6, .4)
+    data1 = Data(PEOPLE_PATH, 5)

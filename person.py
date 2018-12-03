@@ -5,11 +5,9 @@
 
 class Person:
 
-    def __init__(self, name, pictures):
+    def __init__(self, name='', pictures=[]):
         self.name = name
         self.pictures = pictures
 
-    def person_to_string(self):
-        print(self.name)
-        print(len(self.pictures))
-
+    def __len__(self):
+        return len(self.pictures)

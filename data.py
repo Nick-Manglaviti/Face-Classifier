@@ -23,9 +23,12 @@ class Data:
         self.people = []
         self.random = Person()
         self.path = path
-        fold = Fold()
-        self.folds = [fold] * num_folds
-
+        self.folds = []
+        for x in range(num_folds):
+            images = []
+            labels = []
+            fold = Fold(images, labels)
+            self.folds.append(fold)
         if not os.path.isdir(self.path):
             print("This path is not a valid directory")
             raise ValueError
@@ -49,7 +52,7 @@ class Data:
                 label = os.path.basename(person_path)
                 for image in os.listdir(person_path):
                     if image.endswith('.jpg') or image.endswith('.JPG'):
-                        image = cv2.imread(os.path.join(person_path, image))
+                        #image = cv2.imread(os.path.join(person_path, image))
                         images.append(image)
                 if len(images) < len(self.folds):
                     print(f'Not enough images. Must be more than the amount of folds, {len(self.folds)}')
@@ -59,7 +62,7 @@ class Data:
                         self.random = person
                     else:
                         self.people.append(person)
-        if self.random.name is not 'Random' or len(self.random.pictures) < len(self.folds):
+        if self.random.name != 'Random' or len(self.random.pictures) < len(self.folds):
             print(f'No random people images were found for the dataset. A directory named Random needs to exist '
                   f'with more pictures than there are folds to compare and test against the others.')
             raise ValueError
@@ -79,10 +82,19 @@ class Data:
 
     def split_into_folds(self):
         """
-        Create the folds by splitting each person's
-        images into each one
+        Split each person's
+        images into each fold
         """
-
+        for person in self.people:
+            offset = 0
+            for x in range(len(self.folds)):
+                portion = (len(person.pictures) - offset) // (len(self.folds) - x)
+                person.insert_images(offset, portion, self.folds[x].images)
+                offset += portion
+                while portion > 0:
+                    self.folds[x].labels.append(person.name)
+                    portion -= 1
+        print("Done")
 
 
 

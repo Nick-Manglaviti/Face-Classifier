@@ -11,8 +11,3 @@ class Person:
 
     def __len__(self):
         return len(self.pictures)
-
-    def insert_images(self, offset=0, portion=0, images=[]):
-        for x in range(portion):
-            images.append(self.pictures[offset])
-            offset += 1

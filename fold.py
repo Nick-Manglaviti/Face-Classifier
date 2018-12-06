@@ -7,3 +7,4 @@ class Fold:
     def __init__(self, images=[], labels=[]):
         self.images = images
         self.labels = labels
+
